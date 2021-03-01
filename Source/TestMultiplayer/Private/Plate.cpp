@@ -3,10 +3,13 @@
 
 #include "Plate.h"
 #include "CollisionShape.h"
+#include "GeneratedCodeHelpers.h"
+//#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 APlate::APlate()
 {
+	bReplicates = true;
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -15,8 +18,8 @@ APlate::APlate()
 	Box->InitBoxExtent(FVector(100, 100, 20));
 	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	//Mesh->AttachToComponent(RootComponent, FAttachmentTransformRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepWorld, false));
-
+	Mesh->AttachTo(RootComponent); //AttachToComponent(RootComponent, FAttachmentTransformRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, true));
+	//Mesh->AddLocalOffset(FVector());
 }
 
 
@@ -39,13 +42,28 @@ void APlate::Tick(float DeltaTime)
 
 }
 
-void APlate::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex, bool FromSweep, const FHitResult& SweepResult)
+void APlate::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
 {
-	OtherActor->GetActorLabel();
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(APlate, Target);
 }
 
-void APlate::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void APlate::OnBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex, bool FromSweep, const FHitResult& SweepResult)
 {
+	#if UE_SERVER //  этот способ здесь не работает - только на выделенном серваке будет работать
+		PlayerName = OtherActor->GetActorLabel();
+	#endif
 
+	PlayerName = OtherActor->GetActorLabel();
+  }
+
+void APlate::OnEndOverlap_Implementation(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	PlayerName = FString();
+}
+
+FString APlate::PullMessage_Implementation(FString& actor_name)
+{
+	return actor_name;
 }
