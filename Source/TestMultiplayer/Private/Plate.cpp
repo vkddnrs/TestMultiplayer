@@ -46,6 +46,7 @@ void APlate::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetime
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(APlate, Target);
+	DOREPLIFETIME(APlate, PlayerName);
 }
 
 void APlate::OnBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
@@ -54,16 +55,21 @@ void APlate::OnBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComp, 
 	#if UE_SERVER //  этот способ здесь не работает - только на выделенном серваке будет работать
 		PlayerName = OtherActor->GetActorLabel();
 	#endif
-
-	PlayerName = OtherActor->GetActorLabel();
+	if(HasAuthority())		
+	{
+		PlayerName = OtherActor->GetActorLabel();
+		LightBulb->OnLight();
+	}
+	
   }
 
 void APlate::OnEndOverlap_Implementation(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	PlayerName = FString();
+	LightBulb->OffLight();
 }
 
-FString APlate::PullMessage_Implementation(FString& actor_name)
-{
-	return actor_name;
-}
+//FString APlate::PullMessage_Implementation(FString& actor_name)
+//{
+//	return actor_name;
+//}

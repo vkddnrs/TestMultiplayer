@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
+#include "LightBulb.h"
 #include "Plate.generated.h"
 
 UCLASS()
@@ -29,9 +30,9 @@ public:
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	UFUNCTION(BlueprintNativeEvent, Category="Event")
-	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool FromSweep, const FHitResult& SweepResult);
+		void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool FromSweep, const FHitResult& SweepResult);
 	UFUNCTION(BlueprintNativeEvent, Category = "Event")
-	void OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+		void OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
 	UPROPERTY(replicated)
@@ -44,15 +45,19 @@ public:
 	
 protected:
 	UPROPERTY(EditAnywhere, Category="Mesh")
-	UStaticMeshComponent* Mesh;
+		UStaticMeshComponent* Mesh;
 	UPROPERTY(EditAnywhere, Category = "Box")
-	UBoxComponent* Box;
+		UBoxComponent* Box;
 
-	UPROPERTY(Replicated, BlueprintReadOnly, Category="PlayerName")
+public:
+	UPROPERTY(ReplicatedUsing = PullMessage, BlueprintReadOnly, Category="PlayerName")
 	FString PlayerName;
 
 protected:
-	UFUNCTION(BlueprintNativeEvent, Category="Event")
-	FString PullMessage(FString& actor_name);	
+	UFUNCTION(BlueprintImplementableEvent, Category="Event")
+	void PullMessage();
+
+	UPROPERTY(EditAnywhere, Category="LightBulbs")
+	TAssetPtr<ALightBulb> LightBulb; // наша лампочка
 };
 
