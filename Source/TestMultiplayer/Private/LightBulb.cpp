@@ -14,7 +14,7 @@ class UCurveFloat;
 ALightBulb::ALightBulb()
 {
 	bReplicates = true;
-		
+	IsLighting = false;
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
@@ -48,20 +48,27 @@ void ALightBulb::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLife
 	DOREPLIFETIME(ALightBulb, ColorEmissive);
 }
 
-
+// включаетс€ и выключаетс€ timeline дл€ модул€ции сввета от лампы
 void ALightBulb::OnLight()
 {
 	if (HasAuthority())
 	{
-		OnLightEvent();
 		ColorModulate();
-	}
+		OnLightEvent();
+		IsLighting = true; // используетс€ дл€ управлени€ 
+	}						//серверной частью в блюпринте
 }
 
 void ALightBulb::OffLight()
 {
-	CurveTimeline.Stop();
-	ColorEmissive = Color_2;
+	if(HasAuthority())
+	{
+		CurveTimeline.Stop();
+		OffLightEvent();		
+		ColorEmissive = Color_2;
+		IsLighting = false;		
+	}
+	
 }
 
 void ALightBulb::ColorModulate()
@@ -74,6 +81,9 @@ void ALightBulb::ColorModulate()
 		CurveTimeline.AddInterpFloat(CurveFloat, TimelineProgress);
 		CurveTimeline.SetLooping(true);
 		CurveTimeline.PlayFromStart();
+		//FOnTimelineEvent ev;
+		//CurveTimeline.SetTimelinePostUpdateFunc(ev);
+		//ev.BindUFunction(this, "OnLightModulationUpdateAtServer");
 	}
 }
 
@@ -83,3 +93,6 @@ void ALightBulb::TimelineProgress(float Value)
 	//ColorEmissive = FMath::Lerp(StaticCast<FVector>(Color_1), StaticCast<FVector>(Color_2), Value);
 	//ColorEmissive = FLinearColor(vector.X, vector.Y, vector.Z);
 }
+
+//void ALightBulb::OnLightModulationUpdateAtServer()
+//{}

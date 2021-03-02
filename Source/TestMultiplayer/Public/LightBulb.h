@@ -8,6 +8,7 @@
 #include "Components/TimelineComponent.h"
 #include "LightBulb.generated.h"
 
+class UCurveFloat;
 
 UCLASS()
 class TESTMULTIPLAYER_API ALightBulb : public AActor
@@ -41,12 +42,18 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Settings")
 	FLinearColor Color_2 = FLinearColor(0, 0, 0);
 
+	UPROPERTY(BlueprintReadOnly, Category = "light")
+		bool IsLighting = false;
+	
+
 public:
 	//UPROPERTY(BlueprintReadWrite, Category = "DynamicMaterial")
 	//UMaterialInstanceDynamic* matInstanceIndex_0;	
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "LightControl")
-	void OnLightEvent();
+		void OnLightEvent();
+	UFUNCTION(BlueprintImplementableEvent, Category = "LightControl")
+		void OffLightEvent();
 
 	UFUNCTION()// BlueprintNativeEvent, BlueprintCallable, Category = "LightControl")
 	void OnLight();
@@ -54,23 +61,25 @@ public:
 	UFUNCTION()//BlueprintNativeEvent, BlueprintCallable, Category = "LightControl")
 	void OffLight();
 
-	FTimeline CurveTimeline;
+	//UFUNCTION(BlueprintCallable, Category = "Updater")
+	//	void OnLightModulationUpdateAtServer();
+	
+	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = OnRepColor, Category = "Settings")
+		FLinearColor ColorEmissive;
+	UFUNCTION(BlueprintImplementableEvent, Category = "EventRep")
+		void OnRepColor();
 
 protected:
-	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = OnRepColorEmissive, Category = "Settings")
-		FLinearColor ColorEmissive;
-
-	UPROPERTY(EditAnywhere, Category = "Timeline");
-		UCurveFloat* CurveFloat;
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "EventRep")
-		void OnRepColorEmissive();
+	//***** Timeline
+	FTimeline CurveTimeline;
 	
+	UPROPERTY(EditAnywhere, Category = "Timeline");
+		UCurveFloat* CurveFloat;	
 	void ColorModulate();
 	
 	UFUNCTION()
 	void TimelineProgress(float Value);
+	//**********
 	
-
 
 };

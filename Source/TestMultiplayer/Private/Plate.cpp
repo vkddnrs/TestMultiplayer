@@ -49,7 +49,7 @@ void APlate::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetime
 	DOREPLIFETIME(APlate, PlayerName);
 }
 
-void APlate::OnBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+void APlate::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex, bool FromSweep, const FHitResult& SweepResult)
 {
 	#if UE_SERVER //  этот способ здесь не работает - только на выделенном серваке будет работать
@@ -59,13 +59,13 @@ void APlate::OnBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComp, 
 	{
 		PlayerName = OtherActor->GetActorLabel();
 		LightBulb->OnLight();
-	}
-	
+	}	
   }
 
-void APlate::OnEndOverlap_Implementation(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void APlate::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	PlayerName = FString();
+	EndOverlapEvent(); // работаем с удалением виджета с именем на клиенте
+	PlayerName = FString();	// именно в такой последовательности!! для успешного удаления виджета
 	LightBulb->OffLight();
 }
 
