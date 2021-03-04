@@ -47,23 +47,17 @@ protected:
 	
 
 public:
-	//UPROPERTY(BlueprintReadWrite, Category = "DynamicMaterial")
-	//UMaterialInstanceDynamic* matInstanceIndex_0;	
-
 	UFUNCTION(BlueprintImplementableEvent, Category = "LightControl")
 		void OnLightEvent();
 	UFUNCTION(BlueprintImplementableEvent, Category = "LightControl")
 		void OffLightEvent();
 
-	UFUNCTION()// BlueprintNativeEvent, BlueprintCallable, Category = "LightControl")
+	UFUNCTION()
 	void OnLight();
 
-	UFUNCTION()//BlueprintNativeEvent, BlueprintCallable, Category = "LightControl")
+	UFUNCTION()
 	void OffLight();
 
-	//UFUNCTION(BlueprintCallable, Category = "Updater")
-	//	void OnLightModulationUpdateAtServer();
-	
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = OnRepColor, Category = "Settings")
 		FLinearColor ColorEmissive;
 	UFUNCTION(BlueprintImplementableEvent, Category = "EventRep")

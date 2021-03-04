@@ -4,7 +4,7 @@
 #include "Plate.h"
 #include "CollisionShape.h"
 #include "GeneratedCodeHelpers.h"
-//#include "Kismet/GameplayStatics.h"
+
 
 // Sets default values
 APlate::APlate()
@@ -19,7 +19,7 @@ APlate::APlate()
 	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->AttachTo(RootComponent); //AttachToComponent(RootComponent, FAttachmentTransformRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, true));
-	//Mesh->AddLocalOffset(FVector());
+	PlayerName = FString();
 }
 
 
@@ -27,19 +27,21 @@ APlate::APlate()
 void APlate::BeginPlay()
 {
 	Super::BeginPlay();
-	//Box->OnComponentHit.AddDynamic(this, &APlate::OnHit);
 	Box->OnComponentBeginOverlap.AddDynamic(this, &APlate::OnBeginOverlap);
 	Box->OnComponentEndOverlap.AddDynamic(this, &APlate::OnEndOverlap);
 
+	if (Floor)
+	{
+		floor_Z = Floor->GetActorLocation().Z;
+		self_Z = GetActorLocation().Z;
+		offset_Z = self_Z - floor_Z;
+	}	
 }
 
 // Called every frame
 void APlate::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//AddActorWorldOffset(FVector(0, 0, 10));
-
 }
 
 void APlate::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -52,24 +54,31 @@ void APlate::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetime
 void APlate::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex, bool FromSweep, const FHitResult& SweepResult)
 {
-	#if UE_SERVER //  этот способ здесь не работает - только на выделенном серваке будет работать
-		PlayerName = OtherActor->GetActorLabel();
-	#endif
 	if(HasAuthority())		
 	{
-		PlayerName = OtherActor->GetActorLabel();
-		LightBulb->OnLight();
+		PlayerName = OtherActor->GetActorLabel(); // и поместим его имя на виджет		
+		if(!PlayerNameList.Contains(OtherActor->GetActorLabel())) // если в списке нет имени того, кто пришел на плиту
+			PlayerNameList.Add(OtherActor->GetActorLabel()); // добавим его в список		
+			
+		for (int i = 0; i < LightBulbList.Num(); i++)
+			LightBulbList[i]->OnLight(); // зажигаем лампочки
 	}	
-  }
+}
 
 void APlate::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (PlayerNameList.Contains(OtherActor->GetActorLabel()))
+		PlayerNameList.Remove(OtherActor->GetActorLabel());
+
 	EndOverlapEvent(); // работаем с удалением виджета с именем на клиенте
 	PlayerName = FString();	// именно в такой последовательности!! для успешного удаления виджета
-	LightBulb->OffLight();
+
+	if (PlayerNameList.Num())
+		if (HasAuthority())
+			PlayerName = PlayerNameList.Top(); // добавляем виджет с именеи того парня, который остался на плите
+
+	if (!PlayerNameList.Num()) // если на плите никого не осталось - гасим лампочки
+		for (int i = 0; i < LightBulbList.Num(); i++)
+			LightBulbList[i]->OffLight();
 }
 
-//FString APlate::PullMessage_Implementation(FString& actor_name)
-//{
-//	return actor_name;
-//}

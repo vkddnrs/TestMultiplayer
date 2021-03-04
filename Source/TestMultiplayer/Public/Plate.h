@@ -30,9 +30,9 @@ public:
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	UFUNCTION() //BlueprintNativeEvent, Category="Event")
-	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool FromSweep, const FHitResult& SweepResult);
+		void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool FromSweep, const FHitResult& SweepResult);
 	UFUNCTION() //BlueprintNativeEvent, Category = "Event")
-	void OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+		void OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	UFUNCTION(BlueprintImplementableEvent, Category = "CastomEvent")
 		void EndOverlapEvent();
 public:
@@ -40,9 +40,7 @@ public:
 	class AActor* Target;
 
 	virtual bool IsSupportedForNetworking() const override
-	{
-		return true;
-	}
+	{return true;}
 	
 protected:
 	UPROPERTY(EditAnywhere, Category="Mesh")
@@ -55,10 +53,21 @@ public:
 	FString PlayerName;
 
 protected:
-	UFUNCTION(BlueprintImplementableEvent, Category="Event")
-	void PullMessage();
+	TArray<FString> PlayerNameList;	
 
-	UPROPERTY(EditAnywhere, Category="LightBulbs")
-	TAssetPtr<ALightBulb> LightBulb; // наша лампочка
+protected:
+	UFUNCTION(BlueprintImplementableEvent, Category="Event")
+		void PullMessage();
+
+	UPROPERTY(EditAnywhere, Category = "LightBulbs")
+		TArray<TAssetPtr<ALightBulb>> LightBulbList; // массив наших лампочек
+	
+	UPROPERTY(EditAnywhere)
+		TAssetPtr<AActor> Floor; // пол на уровне
+
+	float floor_Z; // абсолютная высота пола
+	float self_Z; //
+	float offset_Z; // высота платформы над полом
+
 };
 

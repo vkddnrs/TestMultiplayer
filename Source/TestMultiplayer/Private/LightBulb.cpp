@@ -17,21 +17,12 @@ ALightBulb::ALightBulb()
 	IsLighting = false;
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
-	//Mesh = LoadObject<UStaticMeshComponent> (nullptr, TEXT("/Game/Geometry/Meshes/Sphere"));
-
 }
 
 // Called when the game starts or when spawned
 void ALightBulb::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//UPrimitiveComponent PrimitiveComponent; // из-за него падает эдитор
-	
-	//matInstanceIndex_0 = PrimitiveComponent.CreateAndSetMaterialInstanceDynamic(0);
-	//matInstanceIndex_0->SetVectorParameterValue(FName, (0, 0, 0));
-
 }
 
 // Called every frame
@@ -67,8 +58,7 @@ void ALightBulb::OffLight()
 		OffLightEvent();		
 		ColorEmissive = Color_2;
 		IsLighting = false;		
-	}
-	
+	}	
 }
 
 void ALightBulb::ColorModulate()
@@ -81,18 +71,16 @@ void ALightBulb::ColorModulate()
 		CurveTimeline.AddInterpFloat(CurveFloat, TimelineProgress);
 		CurveTimeline.SetLooping(true);
 		CurveTimeline.PlayFromStart();
-		//FOnTimelineEvent ev;
-		//CurveTimeline.SetTimelinePostUpdateFunc(ev);
-		//ev.BindUFunction(this, "OnLightModulationUpdateAtServer");
 	}
 }
 
 void ALightBulb::TimelineProgress(float Value)
 {
 	ColorEmissive = FMath::Lerp(Color_1, Color_2, Value);
-	//ColorEmissive = FMath::Lerp(StaticCast<FVector>(Color_1), StaticCast<FVector>(Color_2), Value);
-	//ColorEmissive = FLinearColor(vector.X, vector.Y, vector.Z);
+
+	if(Value > 0.99)
+		Color_1 = FLinearColor::MakeRandomColor();
+	else if (Value < 0.11)
+		Color_2 = FLinearColor::MakeRandomColor();
 }
 
-//void ALightBulb::OnLightModulationUpdateAtServer()
-//{}
