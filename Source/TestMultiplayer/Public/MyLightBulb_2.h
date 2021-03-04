@@ -16,4 +16,7 @@ class TESTMULTIPLAYER_API AMyLightBulb_2 : public ALightBulb
 
 protected:
 	void SetColorBehavior(float Value) override;
+	// Переопределение этого метода дает возможность
+	// задать лампочке данного класса поведение
+	// отличное от того, что прописано в базовом классе
 };
