@@ -8,6 +8,7 @@
 #include "LightBulb.h"
 #include "Plate.generated.h"
 
+
 UCLASS()
 class TESTMULTIPLAYER_API APlate : public AActor
 {
@@ -65,9 +66,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 		TAssetPtr<AActor> Floor; // пол на уровне
 
-	float floor_Z; // абсолютная высота пола
-	float self_Z; //
-	float offset_Z; // высота платформы над полом
-
+	
 };
 

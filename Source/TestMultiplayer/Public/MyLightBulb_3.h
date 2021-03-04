@@ -13,5 +13,7 @@ UCLASS()
 class TESTMULTIPLAYER_API AMyLightBulb_3 : public ALightBulb
 {
 	GENERATED_BODY()
-	
+
+protected:
+	void SetColorBehavior(float Value) override;
 };

@@ -17,6 +17,8 @@ ALightBulb::ALightBulb()
 	IsLighting = false;
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	Color_1 = FLinearColor(0, 0, 0);
+	Color_2 = FLinearColor(0.5, 0, 0.5);
 }
 
 // Called when the game starts or when spawned
@@ -67,20 +69,20 @@ void ALightBulb::ColorModulate()
 	if (CurveFloat)
 	{
 		FOnTimelineFloat TimelineProgress;
-		TimelineProgress.BindUFunction(this, FName("TimelineProgress"));
+		TimelineProgress.BindUFunction(this, FName("SetColorBehavior"));
 		CurveTimeline.AddInterpFloat(CurveFloat, TimelineProgress);
 		CurveTimeline.SetLooping(true);
 		CurveTimeline.PlayFromStart();
 	}
 }
 
-void ALightBulb::TimelineProgress(float Value)
+void ALightBulb::SetColorBehavior(float Value)
 {
 	ColorEmissive = FMath::Lerp(Color_1, Color_2, Value);
 
 	if(Value > 0.99)
 		Color_1 = FLinearColor::MakeRandomColor();
-	else if (Value < 0.11)
+	else if (Value < 0.011)
 		Color_2 = FLinearColor::MakeRandomColor();
 }
 

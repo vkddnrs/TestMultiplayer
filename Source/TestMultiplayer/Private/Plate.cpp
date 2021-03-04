@@ -30,12 +30,6 @@ void APlate::BeginPlay()
 	Box->OnComponentBeginOverlap.AddDynamic(this, &APlate::OnBeginOverlap);
 	Box->OnComponentEndOverlap.AddDynamic(this, &APlate::OnEndOverlap);
 
-	if (Floor)
-	{
-		floor_Z = Floor->GetActorLocation().Z;
-		self_Z = GetActorLocation().Z;
-		offset_Z = self_Z - floor_Z;
-	}	
 }
 
 // Called every frame
@@ -81,4 +75,5 @@ void APlate::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActo
 		for (int i = 0; i < LightBulbList.Num(); i++)
 			LightBulbList[i]->OffLight();
 }
+
 

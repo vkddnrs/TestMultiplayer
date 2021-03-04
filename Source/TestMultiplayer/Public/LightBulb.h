@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Базовый класс для всех Лампочек
 
 #pragma once
 
@@ -33,14 +33,10 @@ public:
 	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "Mesh")
-	UStaticMeshComponent* Mesh;
-	
 	UPROPERTY(BlueprintReadOnly, Category = "Settings")
-	FLinearColor Color_1 = FLinearColor(1,1,1);
-
+		FLinearColor Color_1;
 	UPROPERTY(BlueprintReadOnly, Category = "Settings")
-	FLinearColor Color_2 = FLinearColor(0, 0, 0);
+		FLinearColor Color_2;
 
 	UPROPERTY(BlueprintReadOnly, Category = "light")
 		bool IsLighting = false;
@@ -72,7 +68,9 @@ protected:
 	void ColorModulate();
 	
 	UFUNCTION()
-	void TimelineProgress(float Value);
+	virtual void SetColorBehavior(float Value); 
+	// Переопределение этого метода дает возможность
+	// задать другое поведение лампочке класса-наследника
 	//**********
 	
 
