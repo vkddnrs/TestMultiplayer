@@ -26,39 +26,39 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
-
-	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
-	UFUNCTION() //BlueprintNativeEvent, Category="Event")
-		void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool FromSweep, const FHitResult& SweepResult);
-	UFUNCTION() //BlueprintNativeEvent, Category = "Event")
-		void OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	UFUNCTION(BlueprintImplementableEvent, Category = "CastomEvent")
-		void EndOverlapEvent();
-public:
-	UPROPERTY(replicated)
-	class AActor* Target;
-
-	virtual bool IsSupportedForNetworking() const override
-	{return true;}
+	virtual bool IsSupportedForNetworking() const override	{return true;}
 	
 protected:
+	//************ Репликация***************
+	UPROPERTY(Replicated)
+		class ALight* Target;
+	// включаем репликацию объекта и его составляющих
+	void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+	//**************************************
+	// Коллизия
+	UFUNCTION()
+		void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool FromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		void OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	UFUNCTION(BlueprintImplementableEvent, Category = "CastomEvent")
+		// Эвент для блюпринта
+		void EndOverlap();
+
 	UPROPERTY(EditAnywhere, Category="Mesh")
 		UStaticMeshComponent* Mesh;
 	UPROPERTY(EditAnywhere, Category = "Box")
 		UBoxComponent* Box;
 
-public:
+	//**************** Вывод имени перса***************
 	UPROPERTY(ReplicatedUsing = PullMessage, BlueprintReadOnly, Category="PlayerName")
 	FString PlayerName;
 
-protected:
-	TArray<FString> PlayerNameList;	
-
-protected:
-	UFUNCTION(BlueprintImplementableEvent, Category="Event")
+	UFUNCTION(BlueprintImplementableEvent, Category = "Event")
+		// реплицирует на клиент смену имени перса
 		void PullMessage();
+
+	TArray<FString> PlayerNameList;
+	//***************************************************
 
 	UPROPERTY(EditAnywhere, Category = "LightBulbs")
 		TArray<TAssetPtr<ALightBulb>> LightBulbList; // массив наших лампочек

@@ -64,7 +64,7 @@ void APlate::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActo
 	if (PlayerNameList.Contains(OtherActor->GetActorLabel()))
 		PlayerNameList.Remove(OtherActor->GetActorLabel());
 
-	EndOverlapEvent(); // работаем с удалением виджета с именем на клиенте
+	EndOverlap(); // работаем с удалением виджета с именем на клиенте
 	PlayerName = FString();	// именно в такой последовательности!! для успешного удаления виджета
 
 	if (PlayerNameList.Num())

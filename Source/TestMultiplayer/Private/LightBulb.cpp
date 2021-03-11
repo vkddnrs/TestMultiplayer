@@ -41,15 +41,14 @@ void ALightBulb::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLife
 	DOREPLIFETIME(ALightBulb, ColorEmissive);
 }
 
-// включаетс€ и выключаетс€ timeline дл€ модул€ции сввета от лампы
 void ALightBulb::OnLight()
 {
 	if (HasAuthority())
 	{
-		ColorModulate();
+		SetTimeline();
 		OnLightEvent();
-		IsLighting = true; // используетс€ дл€ управлени€ 
-	}						//серверной частью в блюпринте
+		IsLighting = true;
+	}						
 }
 
 void ALightBulb::OffLight()
@@ -63,17 +62,20 @@ void ALightBulb::OffLight()
 	}	
 }
 
-void ALightBulb::ColorModulate()
+void ALightBulb::SetTimeline()
 {
 	FLinearColor::MakeRandomColor();
 	if (CurveFloat)
 	{
 		FOnTimelineFloat TimelineProgress;
+		// прив€зываем метод, в который будет передаватьс€ измен€ема€ таймлайном переменна€
 		TimelineProgress.BindUFunction(this, FName("SetColorBehavior"));
 		CurveTimeline.AddInterpFloat(CurveFloat, TimelineProgress);
 		CurveTimeline.SetLooping(true);
 		CurveTimeline.PlayFromStart();
 	}
+	else
+		UE_LOG(LogTemp, Warning, TEXT("CurveFloat for color management is not installed."))
 }
 
 void ALightBulb::SetColorBehavior(float Value)

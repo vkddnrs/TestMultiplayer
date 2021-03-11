@@ -2,6 +2,6 @@
 	"BuildId": "13144385",
 	"Modules": 
 	{
-		"TestMultiplayer": "UE4Editor-TestMultiplayer-0001.dll"
+		"TestMultiplayer": "UE4Editor-TestMultiplayer.dll"
 	}
 }
