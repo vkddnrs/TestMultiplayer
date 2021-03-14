@@ -53,9 +53,9 @@ void APlate::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 		PlayerName = OtherActor->GetActorLabel(); // и поместим его имя на виджет		
 		if(!PlayerNameList.Contains(OtherActor->GetActorLabel())) // если в списке нет имени того, кто пришел на плиту
 			PlayerNameList.Add(OtherActor->GetActorLabel()); // добавим его в список		
-			
-		for (int i = 0; i < LightBulbList.Num(); i++)
-			LightBulbList[i]->OnLight(); // зажигаем лампочки
+
+		for (TAssetPtr<ALightBulb> LightBulb : LightBulbList)
+			LightBulb->OnLight(); // зажигаем лампочки		
 	}	
 }
 
@@ -72,8 +72,8 @@ void APlate::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActo
 			PlayerName = PlayerNameList.Top(); // добавляем виджет с именеи того парня, который остался на плите
 
 	if (!PlayerNameList.Num()) // если на плите никого не осталось - гасим лампочки
-		for (int i = 0; i < LightBulbList.Num(); i++)
-			LightBulbList[i]->OffLight();
+		for (TAssetPtr<ALightBulb> LightBulb: LightBulbList)
+			LightBulb->OffLight();
 }
 
 
